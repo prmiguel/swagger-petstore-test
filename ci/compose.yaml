@@ -1,0 +1,6 @@
+services:
+  jenkins:
+    networks:
+      - cinet
+networks:
+  cinet:

@@ -15,10 +15,11 @@ pipeline {
         stage("Run API Tests") {
             steps {
                 sh '''
-                docker container run --rm -t --network ci_cinet -v ci_jenkins_home:/jenkins_home -w /jenkins_home/jobs/build-api-tests/workspace/tests/serenity-junit-screenplay --name api-test swagger-petstore-api-tests mvn clean verify
-                docker container rm -f app
+                docker container run -t --network ci_cinet --name api-test swagger-petstore-api-tests mvn clean verify
+                docker cp api-test:/test/target ./target
+                docker container rm -f api-test app
                 '''
-                publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: './tests/serenity-junit-screenplay/target/site/serenity', reportFiles: 'index.html', reportName: 'API Tests', reportTitles: '', useWrapperFileDirectly: true])
+                publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: './target/site/serenity', reportFiles: 'index.html', reportName: 'API Tests', reportTitles: '', useWrapperFileDirectly: true])
             }
         }
     }

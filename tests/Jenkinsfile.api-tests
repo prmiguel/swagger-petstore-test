@@ -1,0 +1,25 @@
+pipeline {
+    agent any
+    
+    options {
+    timeout(time: 5, unit: 'MINUTES')
+  }
+    stages {
+        stage("Deploy App") {
+            steps {
+                sh '''
+                docker container run --rm -d -p 8081:8080 --network ci_cinet --name app swagger-petstore
+                '''
+            }
+        }
+        stage("Run API Tests") {
+            steps {
+                sh '''
+                docker container run --rm -t --network ci_cinet -v ci_jenkins_home:/jenkins_home -w /jenkins_home/jobs/build-api-tests/workspace/tests/serenity-junit-screenplay --name api-test swagger-petstore-api-tests mvn clean verify
+                docker container rm -f app
+                '''
+                publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: './tests/serenity-junit-screenplay/target/site/serenity', reportFiles: 'index.html', reportName: 'API Tests', reportTitles: '', useWrapperFileDirectly: true])
+            }
+        }
+    }
+}

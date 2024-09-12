@@ -1,0 +1,16 @@
+pipeline {
+    agent any
+    
+    options {
+    timeout(time: 5, unit: 'MINUTES')
+  }
+    stages {
+        stage("Build Docker Image for k6 Tests") {
+            steps {
+                sh '''
+                docker image build -f tests/k6/Dockerfile -t swagger-petstore-k6-tests tests/k6
+                '''
+            }
+        }
+    }
+}

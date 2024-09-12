@@ -2,19 +2,13 @@ export default class UserPayload {
   static getUser() {
     let user = {
       id: 10,
-      name: "doggie",
-      category: {
-        id: 1,
-        name: "Dogs",
-      },
-      photoUrls: ["string"],
-      tags: [
-        {
-          id: 0,
-          name: "string",
-        },
-      ],
-      status: "available",
+      username: "theUser",
+      firstName: "John",
+      lastName: "James",
+      email: "john@mail.com",
+      password: "12345",
+      phone: "123456",
+      userStatus: 1,
     };
     return user;
   }

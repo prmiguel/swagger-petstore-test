@@ -1,0 +1,36 @@
+pipeline {
+    agent any
+    
+    options {
+    timeout(time: 5, unit: 'MINUTES')
+  }
+    stages {
+        stage("Deploy App") {
+            steps {
+                sh '''
+                docker container run --rm -d -p 8081:8080 --network ci_cinet --name app swagger-petstore
+                '''
+            }
+        }
+        stage("Run k6 Tests") {
+            steps {
+                sh '''
+                mkdir target
+                docker container run -t --network ci_cinet --name k6-test -e NODE_ENV=production swagger-petstore-k6-tests run script.js
+                docker cp k6-test:/simulation/summary.html ./target/index.html
+                docker container rm -f k6-test app
+                '''
+                publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: './target', reportFiles: 'index.html', reportName: 'k6 Tests', reportTitles: '', useWrapperFileDirectly: true])
+            }
+        }
+    }
+    post {
+        always {
+            cleanWs(cleanWhenNotBuilt: false,
+                deleteDirs: true,
+                disableDeferredWipeout: true,
+                notFailBuild: true,
+                patterns: [[pattern: 'target', type: 'INCLUDE']])
+        }
+    }
+}

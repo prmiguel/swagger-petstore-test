@@ -15,7 +15,7 @@ export default class User {
   }
 
   create() {
-    let response = http.post(`${Utils.getBaseUrl()}/pet`, UserPayload.getUser(), this.params)
+    let response = http.post(`${Utils.getBaseUrl()}/user`, UserPayload.getUser())
     check(response, {
       'is status 200': () => response.status == 200,
     });

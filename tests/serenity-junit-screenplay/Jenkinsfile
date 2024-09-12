@@ -1,0 +1,16 @@
+pipeline {
+    agent any
+    
+    options {
+    timeout(time: 5, unit: 'MINUTES')
+  }
+    stages {
+        stage("Build Docker Image for API Tests") {
+            steps {
+                sh '''
+                docker image build -f tests/serenity-junit-screenplay/Dockerfile -t swagger-petstore-api-tests tests/serenity-junit-screenplay
+                '''
+            }
+        }
+    }
+}
